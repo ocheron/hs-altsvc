@@ -1,0 +1,4 @@
+.stack-work/
+altsvc.cabal
+stack.yaml.lock
+*~

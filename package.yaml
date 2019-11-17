@@ -1,0 +1,44 @@
+name:                altsvc
+version:             0.1.0.0
+github:              "ocheron/hs-altsvc"
+license:             BSD3
+author:              "Olivier Chéron"
+maintainer:          "olivier.cheron@gmail.com"
+copyright:           "2019 Olivier Chéron"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+synopsis:            HTTP Alternative Services
+category:            Network, Web
+
+description:         Haskell code to parse and generate the @Alt-Svc@ HTTP
+                     header field.
+
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- cereal
+
+library:
+  source-dirs:           src
+  exposed-modules:
+  - Network.HTTP.AltSvc
+  ghc-options:
+  - -Wall
+
+tests:
+  altsvc-test:
+    main:                Tests.hs
+    source-dirs:         tests
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - altsvc
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
