@@ -14,6 +14,7 @@ module Network.HTTP.AltSvc
     ) where
 
 import Control.Applicative
+import Control.Monad
 
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString as B
@@ -56,27 +57,28 @@ data AltValue = AltValue
     }
     deriving (Show, Eq)
 
-percentEncode :: ByteString -> ByteString
-percentEncode = B.concatMap f
+putPercentEncoded :: Putter ByteString
+putPercentEncoded bs = mapM_ f (B.unpack bs)
   where
-    f 0x25          = encodeChar 0x25
-    f b | istchar b = B.singleton b
-        | otherwise = encodeChar b
+    f 0x25          = putEncodeChar 0x25
+    f b | istchar b = putWord8 b
+        | otherwise = putEncodeChar b
 
-    encodeChar b =
+    putEncodeChar b =
         let (d, r) = b `divMod` 16
             high   = toDigit d
             low    = toDigit r
-         in B.pack [ 0x25, high, low ]
+         in putWord8 0x25 >> putWord8 high >> putWord8 low
 
     toDigit b | b < 10    = 0x30 + b
               | otherwise = b - 10 + 0x41
 
-percentDecode :: ByteString -> Either String ByteString
-percentDecode bs = B.pack <$> runGet parse bs
+getPercentEncoded :: Get ByteString
+getPercentEncoded = B.pack <$> parse
   where
     parse = do
         b <- getWord8
+        guard (istchar b)
         case b of
             0x25 -> label "percent-encoded byte" $ do
                         d <- getWord8 >>= fromDigit
@@ -102,10 +104,7 @@ putAltSvc (AltSvc vals) = putCommaList putAltValue vals
 
 getAltValue :: Get AltValue
 getAltValue = do
-    protocolIdEncoded <- getToken
-    protocolId <- case percentDecode protocolIdEncoded of
-        Left _   -> fail "invalid protocol-id"
-        Right bs -> return bs
+    protocolId <- getPercentEncoded
     label "equals sign" $ skipWord8 0x3d
     authority <- getQuoted
     (host, port) <- either fail return (parseAuth authority)
@@ -118,7 +117,7 @@ getAltValue = do
 
 putAltValue :: Putter AltValue
 putAltValue altValue = do
-    putToken (percentEncode $ altValueProtocolId altValue)
+    putPercentEncoded (altValueProtocolId altValue)
     putWord8 0x3d
     putQuoted $ buildAuth (altValueHost altValue) (altValuePort altValue)
     mapM_ putParam (altValueParams altValue)
