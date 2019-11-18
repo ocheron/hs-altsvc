@@ -80,11 +80,12 @@ getPercentEncoded = B.pack <$> parse
         b <- getWord8
         guard (istchar b)
         case b of
-            0x25 -> label "percent-encoded byte" $ do
-                        d <- getWord8 >>= fromDigit
-                        r <- getWord8 >>= fromDigit
-                        let c = d * 16 + r
-                        (c :) <$> parseMore
+            0x25 -> do
+                c <- label "percent-encoded byte" $ do
+                    d <- getWord8 >>= fromDigit
+                    r <- getWord8 >>= fromDigit
+                    return $! d * 16 + r
+                (c :) <$> parseMore
             _    -> (b :) <$> parseMore
 
     parseMore = parse <|> return []
