@@ -58,6 +58,8 @@ vectors =
       , "h2=\":443\"; ma=3600")
     , ( AltSvc [AltValue "h2" "" 443 [("ma", "2592000"), ("persist", "1")]]
       , "h2=\":443\"; ma=2592000; persist=1")
+    , ( AltSvc [AltValue "clear" "alt.example.com" 8080 []]
+      , "clear=\"alt.example.com:8080\"")
     ]
 
 runGetFull :: Get a -> ByteString -> Either String a
@@ -75,6 +77,9 @@ main = defaultMain $ testGroup "AltSvc"
     [ localOption (QuickCheckMaxSize 10) $ testProperty "property" $ \v ->
         runGetFull get (runPut $ put v) === Right (v :: AltSvc)
     , testGroup "vectors" $
-        let toCase i (v, bs) = testCase (show i) $ bs @=? runPut (put v)
-         in zipWith toCase [(1::Int)..] vectors
+        let toCase i (v, bs) = testGroup (show i)
+                [ testCase "getting" $ Right v @=? runGetFull get bs
+                , testCase "putting" $ bs @=? runPut (put v)
+                ]
+        in zipWith toCase [(1::Int)..] vectors
     ]

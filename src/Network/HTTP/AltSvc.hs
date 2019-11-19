@@ -96,7 +96,7 @@ getPercentEncoded = B.pack <$> parse
         | otherwise              = fail "bad hex digit"
 
 getAltSvc :: Get AltSvc
-getAltSvc = AltSvc <$> (getClear <|> getCommaList getAltValue)
+getAltSvc = AltSvc <$> (getCommaList getAltValue <|> getClear)
   where getClear = getExpected "clear" >> return []
 
 putAltSvc :: Putter AltSvc
