@@ -11,7 +11,7 @@ import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
 
 arbitraryByteString :: Gen ByteString
-arbitraryByteString = B.pack <$> arbitrary
+arbitraryByteString = B.pack <$> listOf (choose (0,255))
 
 arbitraryToken :: Gen ByteString
 arbitraryToken = B.pack <$> listOf1 arbitraryTokenByte
@@ -28,7 +28,7 @@ arbitraryParam :: Gen (ByteString, ByteString)
 arbitraryParam = (,) <$> arbitraryToken <*> arbitraryByteString
 
 arbitraryProtocolId :: Gen ByteString
-arbitraryProtocolId = B.pack <$> listOf1 arbitrary
+arbitraryProtocolId = B.pack <$> listOf1 (choose (0,255))
 
 instance Arbitrary AltValue where
     arbitrary = AltValue
