@@ -5,8 +5,8 @@
 -- Stability   : stable
 -- Portability : good
 --
--- HTTP Alternative Services, defined in <https://tools.ietf.org/html/rfc7838
--- RFC 7838>.
+-- HTTP Alternative Services,
+-- defined in <https://tools.ietf.org/html/rfc7838 RFC 7838>.
 {-# LANGUAGE OverloadedStrings #-}
 module Network.HTTP.AltSvc
     ( AltSvc(..)
@@ -27,9 +27,9 @@ import Data.Serialize
 
 import Network.HTTP.AltSvc.Utils
 
--- | Data type to represent the @Alt-Svc@ header content.  It will generally
--- contain one or more values.  An empty list allows to invalidate all
--- alternatives, which is different from providing no header at all.
+-- | Data type to represent the @Alt-Svc@ header content.  It generally contains
+-- one or more values.  An empty list is also possible and allows to invalidate
+-- all alternatives, which is different from providing no header at all.
 --
 -- The content can be encoded to/decoded from bytestring using the 'Serialize'
 -- instance.
@@ -39,7 +39,7 @@ instance Serialize AltSvc where
     get = getAltSvc
     put = putAltSvc
 
--- | An individual alternative service in the @Alt-Svc@ header.
+-- | An individual service in the @Alt-Svc@ header.
 --
 -- The content can be encoded to/decoded from bytestring using the 'Serialize'
 -- instance.
@@ -52,10 +52,10 @@ data AltValue = AltValue
       -- be empty.
     , altValuePort       :: Int
       -- ^ Port number to connect to the alternative service.  Is mandatory and
-      -- should not be negative.
+      -- cannot be negative.
     , altValueParams     :: [(ByteString, ByteString)]
       -- ^ Additional parameters for the alternative.  The parameter names must
-      -- be valid tokens, which means no delimiter character is accepted and
+      -- be valid tokens, which means no delimiter character is accepted, and
       -- cannot be empty.  The values may be any bytestring.
     }
     deriving (Show, Eq)
