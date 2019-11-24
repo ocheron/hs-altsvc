@@ -1,5 +1,5 @@
 # Revision history for altsvc
 
-## Unreleased changes
+## 0.1.0.0 - 2019-11-24
 
 * First version.
