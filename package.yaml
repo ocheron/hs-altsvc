@@ -17,7 +17,7 @@ description:         Haskell code to parse and generate the @Alt-Svc@ HTTP
                      header field.
 
 dependencies:
-- base >= 4.7 && < 5
+- base >= 4.9 && < 5
 - bytestring
 - cereal
 
