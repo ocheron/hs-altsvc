@@ -40,6 +40,9 @@ instance Serialize AltSvc where
     put = putAltSvc
 
 -- | An individual alternative service in the @Alt-Svc@ header.
+--
+-- The content can be encoded to/decoded from bytestring using the 'Serialize'
+-- instance.
 data AltValue = AltValue
     { altValueProtocolId :: ByteString
       -- ^ The protocol to use for the alternative service.  Has the syntax of
@@ -56,6 +59,10 @@ data AltValue = AltValue
       -- cannot be empty.  The values may be any bytestring.
     }
     deriving (Show, Eq)
+
+instance Serialize AltValue where
+    get = getAltValue
+    put = putAltValue
 
 putPercentEncoded :: Putter ByteString
 putPercentEncoded bs = mapM_ f (B.unpack bs)

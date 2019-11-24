@@ -73,9 +73,13 @@ runGetFull parse bs = handle (runGetPartial parse bs)
             | otherwise -> Left ("Remaining bytes: " ++ show rb)
 
 main :: IO ()
-main = defaultMain $ testGroup "AltSvc"
-    [ localOption (QuickCheckMaxSize 10) $ testProperty "property" $ \v ->
-        runGetFull get (runPut $ put v) === Right (v :: AltSvc)
+main = defaultMain $ testGroup "altsvc"
+    [ localOption (QuickCheckMaxSize 10) $ testGroup "properties"
+        [ testProperty "AltValue" $ \v ->
+            runGetFull get (runPut $ put v) === Right (v :: AltValue)
+        , testProperty "AltSvc" $ \v ->
+            runGetFull get (runPut $ put v) === Right (v :: AltSvc)
+        ]
     , testGroup "vectors" $
         let toCase i (v, bs) = testGroup (show i)
                 [ testCase "getting" $ Right v @=? runGetFull get bs
