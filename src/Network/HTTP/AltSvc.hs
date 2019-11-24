@@ -136,7 +136,7 @@ parseAuth authority = case B.elemIndexEnd 0x3a authority of
     Just i  ->
         let str = B.drop (i + 1) authority
             p = read (map (chr . fromIntegral) $ B.unpack str)
-         in if allDigits str
+         in if allDigits str && not (B.null str)
                 then Right (B.take i authority, p)
                 else Left "invalid authority port"
   where allDigits = B.all $ \b -> b >= 0x30 && b <= 0x39
